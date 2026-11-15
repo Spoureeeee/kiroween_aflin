@@ -1,4 +1,4 @@
-﻿/**
+/**
  * RFC 4180-compliant CSV tokeniser.
  *
  * Handles:

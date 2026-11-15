@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Amount parsing utilities.
  *
  * Converts raw amount strings to integer minor units (e.g. RM 12.50 -> 1250).

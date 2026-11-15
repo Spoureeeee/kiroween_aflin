@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Main entry point for the CSV parsing module.
  *
  * Usage:
@@ -66,7 +66,7 @@ export function parseCSV(
     if (warnings.length < maxWarnings) warnings.push(msg);
   };
 
-  // â”€â”€ 1. Tokenise â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- 1. Tokenise ------------------------------------------------------------
 
   const rows = tokeniseCSV(csvText);
 
@@ -108,7 +108,7 @@ export function parseCSV(
     );
   }
 
-  // â”€â”€ 2. Resolve column map â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- 2. Resolve column map --------------------------------------------------
 
   let columnMap: ColumnMap;
   let signConvention: SignConvention;
@@ -140,7 +140,7 @@ export function parseCSV(
     }
   }
 
-  // â”€â”€ 3. Infer currency and decimal convention â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- 3. Infer currency and decimal convention -------------------------------
 
   const amountSamples = dataRows
     .slice(0, 30)
@@ -153,7 +153,7 @@ export function parseCSV(
     options.manualColumns?.currency ??
     inferCurrency(amountSamples);
 
-  // â”€â”€ 4. Parse rows â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // -- 4. Parse rows ----------------------------------------------------------
 
   let skippedRows = headerRowIndex; // rows before the header
   const validTransactions: Transaction[] = [];
@@ -211,20 +211,20 @@ function buildTransaction(
   // Skip completely blank rows.
   if (row.every((c) => c === "")) return null;
 
-  // â”€â”€ Date â”€â”€
+  // -- Date --
   const rawDate = row[map.date] ?? "";
   const date = parseDate(rawDate);
   if (!date) {
     if (rawDate !== "") {
-      addWarning(`Row ${rowNum}: could not parse date "${rawDate}" â€” row skipped.`);
+      addWarning(`Row ${rowNum}: could not parse date "${rawDate}" - row skipped.`);
     }
     return null;
   }
 
-  // â”€â”€ Description â”€â”€
+  // -- Description --
   const description = (row[map.description] ?? "").trim();
 
-  // â”€â”€ Amount â”€â”€
+  // -- Amount --
   let amountMinorUnits: number;
 
   if (signConvention === "split-columns" && map.credit !== undefined) {
@@ -237,7 +237,7 @@ function buildTransaction(
     if (debitAmount === null && creditAmount === null) {
       if (rawDebit !== "" || rawCredit !== "") {
         addWarning(
-          `Row ${rowNum}: could not parse debit "${rawDebit}" or credit "${rawCredit}" â€” row skipped.`,
+          `Row ${rowNum}: could not parse debit "${rawDebit}" or credit "${rawCredit}" - row skipped.`,
         );
       }
       return null;
@@ -249,7 +249,7 @@ function buildTransaction(
     } else if (creditAmount !== null && creditAmount !== 0) {
       amountMinorUnits = -Math.abs(creditAmount);
     } else {
-      // Both zero â€” keep as 0 (might be a fee waiver row, etc.)
+      // Both zero - keep as 0 (might be a fee waiver row, etc.)
       amountMinorUnits = 0;
     }
   } else {
@@ -258,7 +258,7 @@ function buildTransaction(
 
     if (parsed === null) {
       if (rawAmount !== "") {
-        addWarning(`Row ${rowNum}: could not parse amount "${rawAmount}" â€” row skipped.`);
+        addWarning(`Row ${rowNum}: could not parse amount "${rawAmount}" - row skipped.`);
       }
       return null;
     }

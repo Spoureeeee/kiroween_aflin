@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Date parsing utilities for statement CSVs.
  *
  * All output is an ISO 8601 date string in UTC (YYYY-MM-DD).

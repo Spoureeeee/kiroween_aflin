@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import { parseCSV } from "../parseCSV.js";
 import { ParseError } from "../types.js";
 
@@ -33,7 +33,7 @@ const CURRENCY_PREFIX_CSV = `Date,Description,Debit
 // Tests
 // ---------------------------------------------------------------------------
 
-describe("parseCSV â€“ split debit/credit columns", () => {
+describe("parseCSV - split debit/credit columns", () => {
   it("parses a split-column statement", () => {
     const result = parseCSV(SPLIT_COLUMNS_CSV);
     expect(result.transactions).toHaveLength(4);
@@ -61,13 +61,13 @@ describe("parseCSV â€“ split debit/credit columns", () => {
   });
 });
 
-describe("parseCSV â€“ signed single amount column", () => {
+describe("parseCSV - signed single amount column", () => {
   it("flips negative amounts to positive (money out)", () => {
     const result = parseCSV(SIGNED_AMOUNT_CSV);
     const netflix = result.transactions.find((t) =>
       t.description.includes("NETFLIX"),
     );
-    // -15.90 in the file â†’ debit-negative convention â†’ 1590 minor units out
+    // -15.90 in the file -> debit-negative convention -> 1590 minor units out
     expect(netflix!.amountMinorUnits).toBeGreaterThan(0);
   });
 
@@ -80,7 +80,7 @@ describe("parseCSV â€“ signed single amount column", () => {
   });
 });
 
-describe("parseCSV â€“ currency inference", () => {
+describe("parseCSV - currency inference", () => {
   it("infers MYR from RM prefix", () => {
     const result = parseCSV(CURRENCY_PREFIX_CSV);
     expect(result.currency).toBe("MYR");
@@ -97,7 +97,7 @@ describe("parseCSV â€“ currency inference", () => {
   });
 });
 
-describe("parseCSV â€“ manual column mapping", () => {
+describe("parseCSV - manual column mapping", () => {
   it("accepts manual column names", () => {
     const csv = `Tanggal,Keterangan,Jumlah\n15/03/2024,Netflix,15.90\n`;
     const result = parseCSV(csv, {
@@ -134,7 +134,7 @@ describe("parseCSV â€“ manual column mapping", () => {
   });
 });
 
-describe("parseCSV â€“ error cases", () => {
+describe("parseCSV - error cases", () => {
   it("throws ParseError on empty input", () => {
     expect(() => parseCSV("")).toThrow(ParseError);
   });
@@ -153,7 +153,7 @@ describe("parseCSV â€“ error cases", () => {
   });
 });
 
-describe("parseCSV â€“ robustness", () => {
+describe("parseCSV - robustness", () => {
   it("skips blank rows and counts them", () => {
     const csv = `Date,Description,Amount\n15/03/2024,Netflix,15.90\n\n16/03/2024,Spotify,15.90\n`;
     const result = parseCSV(csv);
