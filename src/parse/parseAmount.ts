@@ -1,13 +1,13 @@
-/**
+﻿/**
  * Amount parsing utilities.
  *
- * Converts raw amount strings to integer minor units (e.g. RM 12.50 → 1250).
+ * Converts raw amount strings to integer minor units (e.g. RM 12.50 -> 1250).
  * Handles:
- *   - Currency symbols and codes as prefix or suffix (RM, MYR, $, USD, £, €, etc.)
+ *   - Currency symbols and codes as prefix or suffix (RM, MYR, $, USD, PS, EUR, etc.)
  *   - Comma-as-thousands-separator and period-as-decimal (e.g. 1,234.56)
  *   - Period-as-thousands and comma-as-decimal (European: 1.234,56)
  *   - No decimal (integer amounts)
- *   - Parentheses as negative sign: (12.50) → −1250
+ *   - Parentheses as negative sign: (12.50) -> -1250
  *   - Explicit sign prefix: +12.50, -12.50
  *   - Blank / empty fields (returns null)
  */
@@ -15,7 +15,11 @@
 // Match an optional currency code/symbol, an optional sign, digits with
 // optional separators, and an optional decimal part.
 const AMOUNT_RE =
-  /^(?<pre>[A-Z$€£¥₹฿₩]+\s*)?(?<paren_open>\()?(?<sign>[+-])?(?<int>[\d,.']+)(?:[.,](?<frac>\d{1,4}))?(?<paren_close>\))?(?:\s*(?<post>[A-Z$€£¥₹฿₩]+))?$/i;
+  /^(?<pre>[A-Z$EUR#PS#]+\s*)?(?<paren_open>\()?(?<sign>[+-])?(?<int>[\d,']+)(?:[.,](?<frac>\d{1,4}))?(?<paren_close>\))?(?:\s*(?<post>[A-Z$EUR#PS#]+))?$/i;
+
+// Use a simpler regex that avoids the character class issue
+const AMOUNT_RE2 =
+  /^(?:[A-Z$€£¥₹฿₩]+\s*)?(?:(\())?([+-])?(?:([\d,'.]+))(?:(\)))? *(?:[A-Z$€£¥₹฿₩]+)?$/i;
 
 /**
  * Detects whether a list of raw amount strings uses European decimal notation
@@ -28,7 +32,7 @@ export function detectEuropeanDecimal(samples: string[]): boolean {
   let usCount = 0;
   for (const s of samples) {
     const stripped = s.replace(/[^0-9.,]/g, "");
-    // European: comma after at least one digit group that's exactly 2 chars.
+    // European: comma after at least one digit group that is exactly 2 chars.
     if (/\d,\d{2}$/.test(stripped) && stripped.includes(".")) euroCount++;
     else if (/\d\.\d{2}$/.test(stripped) && stripped.includes(",")) usCount++;
   }
@@ -38,16 +42,27 @@ export function detectEuropeanDecimal(samples: string[]): boolean {
 /**
  * Parses a raw amount string into integer minor units.
  *
- * @param raw            - The raw cell value from the CSV.
- * @param europeanDecimal - When true, treat `.` as thousands and `,` as decimal.
- * @returns Minor units as an integer, or `null` if the field is blank/unparseable.
+ * @param raw             - The raw cell value from the CSV.
+ * @param europeanDecimal - When true, treat "." as thousands and "," as decimal.
+ * @returns Minor units as an integer, or null if the field is blank/unparseable.
  */
 export function parseAmount(
   raw: string,
   europeanDecimal = false,
 ): number | null {
-  const s = raw.trim();
+  let s = raw.trim();
   if (s === "" || s === "-" || s === "—") return null;
+
+  if (europeanDecimal) {
+    // Normalise European separators to US-style before regex matching:
+    //   "1.234,56" -> remove dot-as-thousands -> "1234,56" -> swap comma-decimal -> "1234.56"
+    //   "12,50"    -> no dot-thousands to remove -> "12,50" -> swap comma-decimal -> "12.50"
+    s = s.replace(/\.(?=\d{3}(?:[^0-9]|$))/g, ""); // remove period used as thousands separator
+    s = s.replace(/,(\d{1,4})([^,0-9]*)$/, ".$1$2"); // swap last comma-decimal to dot
+  }
+
+  const AMOUNT_RE =
+    /^(?<pre>[A-Z$€£¥₹฿₩]+\s*)?(?<paren_open>\()?(?<sign>[+-])?(?<int>[\d,']+)(?:[.,](?<frac>\d{1,4}))?(?<paren_close>\))?(?:\s*(?<post>[A-Z$€£¥₹฿₩]+))?$/i;
 
   const m = s.match(AMOUNT_RE);
   if (!m?.groups) return null;
@@ -55,22 +70,14 @@ export function parseAmount(
   const { paren_open, sign, frac } = m.groups;
   let intPart = m.groups["int"] ?? "";
 
-  // Strip separators according to convention.
-  if (europeanDecimal) {
-    // Remove period (thousands) then convert comma to dot (decimal).
-    intPart = intPart.replace(/\./g, "");
-    intPart = intPart.replace(/,/g, "");
-  } else {
-    // Remove comma (thousands).
-    intPart = intPart.replace(/,/g, "");
-    // Remove any trailing period that isn't a decimal point.
-    intPart = intPart.replace(/\.$/, "");
-  }
+  // Strip thousands separator (comma) and any stray trailing dot.
+  intPart = intPart.replace(/,/g, "");
+  intPart = intPart.replace(/\.$/, "");
 
   const intVal = parseInt(intPart || "0", 10);
   if (isNaN(intVal)) return null;
 
-  // Handle fractional part → minor units.
+  // Handle fractional part -> minor units.
   let minorUnits: number;
   if (frac !== undefined) {
     // Pad or truncate to exactly 2 decimal places.
@@ -78,10 +85,7 @@ export function parseAmount(
     const fracVal = parseInt(fracStr, 10);
     minorUnits = intVal * 100 + fracVal;
   } else {
-    // No decimal separator — treat as already in minor units if the value looks
-    // like it has no cents, otherwise multiply by 100.
-    // Convention: values without a decimal point are treated as whole currency
-    // units and converted to minor units.
+    // No decimal separator -- treat as whole currency units, convert to minor units.
     minorUnits = intVal * 100;
   }
 
@@ -92,7 +96,7 @@ export function parseAmount(
 
 /**
  * Extracts a currency code from a raw amount string, returning it in upper
- * case or `null` if none is found.
+ * case or null if none is found.
  *
  * Checks for ISO 4217 codes (3 uppercase letters) and common symbols.
  */
@@ -101,7 +105,7 @@ export function extractCurrency(raw: string): string | null {
 
   // Look for a 3-letter code first.
   const isoMatch = s.match(/\b([A-Z]{3})\b/);
-  if (isoMatch) return isoMatch[1];
+  if (isoMatch?.[1] != null) return isoMatch[1];
 
   // Symbol fallback.
   if (s.includes("RM")) return "MYR";
@@ -116,7 +120,7 @@ export function extractCurrency(raw: string): string | null {
 
 /**
  * Infers the currency from the first few non-empty amount cells in a column.
- * Falls back to `defaultCurrency` when nothing is found.
+ * Falls back to defaultCurrency when nothing is found.
  */
 export function inferCurrency(
   samples: string[],

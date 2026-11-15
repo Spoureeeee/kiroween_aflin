@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Auto-detects which columns contain the date, description and amount.
  *
  * Strategy:
@@ -118,7 +118,7 @@ function columnValues(rows: string[][], colIdx: number): string[] {
 export interface DetectResult {
   columnMap: ColumnMap;
   signConvention: SignConvention;
-  /** 0–1 confidence score. */
+  /** 0â€“1 confidence score. */
   confidence: number;
 }
 
@@ -200,7 +200,7 @@ export function detectColumns(
 
   // Compute overall confidence.
   const totalScore = datePick.score + descPick.score + debitPick.score;
-  // Max possible: 4 header + 2 value = 6 per key column × 3 = 18.
+  // Max possible: 4 header + 2 value = 6 per key column Ã— 3 = 18.
   const confidence = Math.min(totalScore / 12, 1);
 
   if (confidence < 0.3) return null;
@@ -222,8 +222,8 @@ function bestUnused(
   let bestIdx = -1;
   let bestScore = -Infinity;
   for (let i = 0; i < scores.length; i++) {
-    if (!excluded.has(i) && scores[i] > bestScore) {
-      bestScore = scores[i];
+    if (!excluded.has(i) && (scores[i] ?? -Infinity) > bestScore) {
+      bestScore = scores[i]!;
       bestIdx = i;
     }
   }
@@ -239,3 +239,4 @@ function bestUnused(
   }
   return { index: bestIdx === -1 ? 0 : bestIdx, score: bestScore };
 }
+

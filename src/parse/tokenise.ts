@@ -1,11 +1,11 @@
-/**
+﻿/**
  * RFC 4180-compliant CSV tokeniser.
  *
  * Handles:
  *   - Quoted fields (double-quote escaping "")
  *   - CRLF and LF line endings
  *   - Fields that contain commas, newlines, or quotes inside quotes
- *   - Leading/trailing whitespace trimming on unquoted fields
+ *   - Leading/trailing whitespace trimming on unquoted fields only
  *
  * Returns rows as arrays of strings. Empty trailing rows are dropped.
  */
@@ -14,10 +14,17 @@ export function tokeniseCSV(raw: string): string[][] {
   let row: string[] = [];
   let field = "";
   let inQuotes = false;
+  let wasQuoted = false;
   let i = 0;
 
-  // Normalise CRLF → LF to simplify line-end handling.
+  // Normalise CRLF -> LF to simplify line-end handling.
   const src = raw.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+
+  const pushField = () => {
+    row.push(wasQuoted ? field : field.trim());
+    field = "";
+    wasQuoted = false;
+  };
 
   while (i < src.length) {
     const ch = src[i];
@@ -39,14 +46,13 @@ export function tokeniseCSV(raw: string): string[][] {
     } else {
       if (ch === '"') {
         inQuotes = true;
+        wasQuoted = true;
         i++;
       } else if (ch === ",") {
-        row.push(field.trim());
-        field = "";
+        pushField();
         i++;
       } else if (ch === "\n") {
-        row.push(field.trim());
-        field = "";
+        pushField();
         // Only push non-empty rows (skip blank lines).
         if (row.some((c) => c !== "")) {
           rows.push(row);
@@ -61,7 +67,7 @@ export function tokeniseCSV(raw: string): string[][] {
   }
 
   // Flush any trailing content that was not terminated by a newline.
-  row.push(field.trim());
+  pushField();
   if (row.some((c) => c !== "")) {
     rows.push(row);
   }

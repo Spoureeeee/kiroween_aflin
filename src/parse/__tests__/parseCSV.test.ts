@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import { parseCSV } from "../parseCSV.js";
 import { ParseError } from "../types.js";
 
@@ -33,7 +33,7 @@ const CURRENCY_PREFIX_CSV = `Date,Description,Debit
 // Tests
 // ---------------------------------------------------------------------------
 
-describe("parseCSV – split debit/credit columns", () => {
+describe("parseCSV â€“ split debit/credit columns", () => {
   it("parses a split-column statement", () => {
     const result = parseCSV(SPLIT_COLUMNS_CSV);
     expect(result.transactions).toHaveLength(4);
@@ -57,17 +57,17 @@ describe("parseCSV – split debit/credit columns", () => {
 
   it("sets the date as ISO 8601", () => {
     const result = parseCSV(SPLIT_COLUMNS_CSV);
-    expect(result.transactions[0].date).toBe("2024-03-15");
+    expect(result.transactions[0]!.date).toBe("2024-03-15");
   });
 });
 
-describe("parseCSV – signed single amount column", () => {
+describe("parseCSV â€“ signed single amount column", () => {
   it("flips negative amounts to positive (money out)", () => {
     const result = parseCSV(SIGNED_AMOUNT_CSV);
     const netflix = result.transactions.find((t) =>
       t.description.includes("NETFLIX"),
     );
-    // -15.90 in the file → debit-negative convention → 1590 minor units out
+    // -15.90 in the file â†’ debit-negative convention â†’ 1590 minor units out
     expect(netflix!.amountMinorUnits).toBeGreaterThan(0);
   });
 
@@ -80,7 +80,7 @@ describe("parseCSV – signed single amount column", () => {
   });
 });
 
-describe("parseCSV – currency inference", () => {
+describe("parseCSV â€“ currency inference", () => {
   it("infers MYR from RM prefix", () => {
     const result = parseCSV(CURRENCY_PREFIX_CSV);
     expect(result.currency).toBe("MYR");
@@ -97,14 +97,14 @@ describe("parseCSV – currency inference", () => {
   });
 });
 
-describe("parseCSV – manual column mapping", () => {
+describe("parseCSV â€“ manual column mapping", () => {
   it("accepts manual column names", () => {
     const csv = `Tanggal,Keterangan,Jumlah\n15/03/2024,Netflix,15.90\n`;
     const result = parseCSV(csv, {
       manualColumns: { date: "Tanggal", description: "Keterangan", debit: "Jumlah" },
     });
     expect(result.transactions).toHaveLength(1);
-    expect(result.transactions[0].amountMinorUnits).toBe(1590);
+    expect(result.transactions[0]!.amountMinorUnits).toBe(1590);
   });
 
   it("accepts manual column indices", () => {
@@ -134,7 +134,7 @@ describe("parseCSV – manual column mapping", () => {
   });
 });
 
-describe("parseCSV – error cases", () => {
+describe("parseCSV â€“ error cases", () => {
   it("throws ParseError on empty input", () => {
     expect(() => parseCSV("")).toThrow(ParseError);
   });
@@ -153,7 +153,7 @@ describe("parseCSV – error cases", () => {
   });
 });
 
-describe("parseCSV – robustness", () => {
+describe("parseCSV â€“ robustness", () => {
   it("skips blank rows and counts them", () => {
     const csv = `Date,Description,Amount\n15/03/2024,Netflix,15.90\n\n16/03/2024,Spotify,15.90\n`;
     const result = parseCSV(csv);
@@ -176,6 +176,7 @@ describe("parseCSV – robustness", () => {
   it("handles quoted fields with commas in the description", () => {
     const csv = `Date,Description,Amount\n15/03/2024,"Netflix, Inc.",15.90\n`;
     const result = parseCSV(csv);
-    expect(result.transactions[0].description).toBe("Netflix, Inc.");
+    expect(result.transactions[0]!.description).toBe("Netflix, Inc.");
   });
 });
+

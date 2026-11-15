@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Date parsing utilities for statement CSVs.
  *
  * All output is an ISO 8601 date string in UTC (YYYY-MM-DD).
@@ -65,15 +65,17 @@ export function parseDate(raw: string): string | null {
   // --- Numeric: separated by - / . (groups of 1–4 digits) ---
   const numericMatch = s.match(/^(\d{1,4})([-/.])(\d{1,2})\2(\d{1,4})$/);
   if (numericMatch) {
-    const a = parseInt(numericMatch[1], 10);
-    const b = parseInt(numericMatch[3], 10);
-    const c = parseInt(numericMatch[4], 10);
+    const [, p1, , p3, p4] = numericMatch;
+    if (p1 === undefined || p3 === undefined || p4 === undefined) return null;
+    const a = parseInt(p1, 10);
+    const b = parseInt(p3, 10);
+    const c = parseInt(p4, 10);
 
     // Determine order by part lengths.
-    if (numericMatch[1].length === 4) {
+    if (p1.length === 4) {
       // YYYY-MM-DD
       return toISO(a, b, c);
-    } else if (numericMatch[4].length === 4) {
+    } else if (p4.length === 4) {
       // DD-MM-YYYY or MM-DD-YYYY
       // If `a` > 12, it must be a day; otherwise assume DD-MM-YYYY (most common
       // outside the US for statement files, especially MY/EU).
@@ -91,9 +93,11 @@ export function parseDate(raw: string): string | null {
     /^(\d{1,2})[-\s./,]([A-Za-z]{3,})[-\s./,](\d{2,4})$/,
   );
   if (dmyAlpha) {
-    const day = parseInt(dmyAlpha[1], 10);
-    const monthStr = dmyAlpha[2].toLowerCase();
-    const yearRaw = parseInt(dmyAlpha[3], 10);
+    const [, dm1, dm2, dm3] = dmyAlpha;
+    if (dm1 === undefined || dm2 === undefined || dm3 === undefined) return null;
+    const day = parseInt(dm1, 10);
+    const monthStr = dm2.toLowerCase();
+    const yearRaw = parseInt(dm3, 10);
     const year = yearRaw < 100 ? (yearRaw < 50 ? 2000 + yearRaw : 1900 + yearRaw) : yearRaw;
     const month = MONTH_ABBR[monthStr] ?? MONTH_FULL[monthStr];
     if (!month) return null;
@@ -105,9 +109,11 @@ export function parseDate(raw: string): string | null {
     /^([A-Za-z]{3,})[-\s./,](\d{1,2}),?[-\s./,](\d{2,4})$/,
   );
   if (mdyAlpha) {
-    const monthStr = mdyAlpha[1].toLowerCase();
-    const day = parseInt(mdyAlpha[2], 10);
-    const yearRaw = parseInt(mdyAlpha[3], 10);
+    const [, md1, md2, md3] = mdyAlpha;
+    if (md1 === undefined || md2 === undefined || md3 === undefined) return null;
+    const monthStr = md1.toLowerCase();
+    const day = parseInt(md2, 10);
+    const yearRaw = parseInt(md3, 10);
     const year = yearRaw < 100 ? (yearRaw < 50 ? 2000 + yearRaw : 1900 + yearRaw) : yearRaw;
     const month = MONTH_ABBR[monthStr] ?? MONTH_FULL[monthStr];
     if (!month) return null;
