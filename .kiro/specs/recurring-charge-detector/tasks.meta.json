@@ -12,6 +12,25 @@
         "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
         "timestamp": 1794809553278
       }
+    ],
+    "2.1 Implement `normaliseMerchant` in `src/detect/normaliseMerchant.ts`": [
+      {
+        "executionId": "0f1644fd-ec8c-414d-8588-fc7fb4851fd0",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794809896770
+      },
+      {
+        "executionId": "0f1644fd-ec8c-414d-8588-fc7fb4851fd0",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794810048437
+      }
+    ],
+    "2. Implement merchant-name normalisation": [
+      {
+        "executionId": "0f1644fd-ec8c-414d-8588-fc7fb4851fd0",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794810048497
+      }
     ]
   }
 }

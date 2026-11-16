@@ -23,8 +23,8 @@ against the real sample CSV.
     are added in later tasks).
   - _Requirements: 9.1_
 
-- [ ] 2. Implement merchant-name normalisation
-  - [ ] 2.1 Implement `normaliseMerchant` in `src/detect/normaliseMerchant.ts`
+- [x] 2. Implement merchant-name normalisation
+  - [x] 2.1 Implement `normaliseMerchant` in `src/detect/normaliseMerchant.ts`
     - Strip trailing whitespace-delimited tokens that contain at least one digit, but never the
       first token.
     - Collapse consecutive internal whitespace to a single space.
