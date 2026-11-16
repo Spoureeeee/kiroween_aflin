@@ -88,6 +88,37 @@
         "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
         "timestamp": 1794810840687
       }
+    ],
+    "7.1 Implement `detectSubscriptions` in `src/detect/detectSubscriptions.ts`": [
+      {
+        "executionId": "1572714d-ea20-4797-bfef-fbe1676667fa",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794811101360
+      },
+      {
+        "executionId": "1572714d-ea20-4797-bfef-fbe1676667fa",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794811186161
+      }
+    ],
+    "7.2 Wire public exports in `src/detect/index.ts`": [
+      {
+        "executionId": "1572714d-ea20-4797-bfef-fbe1676667fa",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794811192600
+      },
+      {
+        "executionId": "1572714d-ea20-4797-bfef-fbe1676667fa",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794811235979
+      }
+    ],
+    "7. Implement the main detection pipeline": [
+      {
+        "executionId": "1572714d-ea20-4797-bfef-fbe1676667fa",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794811236053
+      }
     ]
   }
 }

@@ -97,8 +97,8 @@ against the real sample CSV.
 - [ ] 6. Checkpoint - Core helpers complete
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 7. Implement the main detection pipeline
-  - [ ] 7.1 Implement `detectSubscriptions` in `src/detect/detectSubscriptions.ts`
+- [x] 7. Implement the main detection pipeline
+  - [x] 7.1 Implement `detectSubscriptions` in `src/detect/detectSubscriptions.ts`
     - Step 1: filter transactions where `amountMinorUnits <= 0`.
     - Step 2: add `merchantName` by calling `normaliseMerchant(description)` for each
       transaction.
@@ -116,7 +116,7 @@ against the real sample CSV.
       filtering) using `ACTIVE_LOOKBACK[cadence]`.
     - Step 9: sort output by `typicalAmountMinorUnits` descending, then `merchantName` ascending.
     - _Requirements: 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4, 4.1–4.7, 5.1, 5.2, 6.1–6.6, 7.1–7.6, 8.1, 9.1–9.12, 10.1, 10.2_
-  - [ ] 7.2 Wire public exports in `src/detect/index.ts`
+  - [x] 7.2 Wire public exports in `src/detect/index.ts`
     - Export `detectSubscriptions` from `./detectSubscriptions.js`.
     - Export types `DetectedSubscription`, `Cadence`, `Confidence` from `./types.js`.
     - _Requirements: 9.1_
