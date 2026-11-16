@@ -119,6 +119,25 @@
         "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
         "timestamp": 1794811236053
       }
+    ],
+    "9.1 Write all 16 Req 12 assertions in `src/detect/__tests__/detector.fixture.test.ts`": [
+      {
+        "executionId": "f899c17a-3fed-48b5-931d-bf319ecbbe57",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794811386947
+      },
+      {
+        "executionId": "f899c17a-3fed-48b5-931d-bf319ecbbe57",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794811536983
+      }
+    ],
+    "9. Write the sample-CSV fixture test": [
+      {
+        "executionId": "f899c17a-3fed-48b5-931d-bf319ecbbe57",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794811537051
+      }
     ]
   }
 }

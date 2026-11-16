@@ -163,8 +163,8 @@ against the real sample CSV.
       `confidence`, `firstCharge`, `lastCharge`, and `chargeCount` with and without the noise.
     - **Validates: Requirements 11.7**
 
-- [ ] 9. Write the sample-CSV fixture test
-  - [ ]* 9.1 Write all 16 Req 12 assertions in `src/detect/__tests__/detector.fixture.test.ts`
+- [x] 9. Write the sample-CSV fixture test
+  - [x]* 9.1 Write all 16 Req 12 assertions in `src/detect/__tests__/detector.fixture.test.ts`
     - Parse `samples/statement-sample.csv` via `src/parse/parseCSV`; pass result to
       `detectSubscriptions`.
     - Assert confirmed monthly subscriptions present: IRONHOUSE GYM MEMBERSHIP (12900, amountChanged
