@@ -57,8 +57,8 @@ against the real sample CSV.
     - `median`: single element; odd-count array; even-count array (lower-of-two rule verified).
     - _Requirements: 4.6, 4.7_
 
-- [ ] 4. Implement cadence classification
-  - [ ] 4.1 Implement `classifyCadence`, `MIN_OCCURRENCES`, and `ACTIVE_LOOKBACK` in `src/detect/classifyCadence.ts`
+- [x] 4. Implement cadence classification
+  - [x] 4.1 Implement `classifyCadence`, `MIN_OCCURRENCES`, and `ACTIVE_LOOKBACK` in `src/detect/classifyCadence.ts`
     - Drift-expanded windows: weekly 0–15 days, monthly 20–50, quarterly 75–105, annual 325–405.
     - Return `null` when the interval falls outside all windows.
     - `MIN_OCCURRENCES`: `{ weekly: 3, monthly: 2, quarterly: 2, annual: 2 }`.
@@ -71,8 +71,8 @@ against the real sample CSV.
     - Value between two windows (e.g. 60 days) returns `null`.
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 5.1_
 
-- [ ] 5. Implement amount assessment
-  - [ ] 5.1 Implement `computeCV`, `isMonotoneStep`, and `assessAmounts` in `src/detect/assessAmounts.ts`
+- [x] 5. Implement amount assessment
+  - [x] 5.1 Implement `computeCV`, `isMonotoneStep`, and `assessAmounts` in `src/detect/assessAmounts.ts`
     - `computeCV(amounts)`: population CV = std-dev / mean using integer arithmetic throughout;
       return `0` when all amounts are equal.
     - `isMonotoneStep(amounts)`: return `true` when the sequence changes value at most once

@@ -50,6 +50,44 @@
         "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
         "timestamp": 1794810317358
       }
+    ],
+    "4.1 Implement `classifyCadence`, `MIN_OCCURRENCES`, and `ACTIVE_LOOKBACK` in `src/detect/classifyCadence.ts`": [
+      {
+        "executionId": "24d6d3cb-b128-4fd1-85a7-0faf7d9e0d1a",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794810452418
+      },
+      {
+        "executionId": "24d6d3cb-b128-4fd1-85a7-0faf7d9e0d1a",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794810496246
+      }
+    ],
+    "4. Implement cadence classification": [
+      {
+        "executionId": "24d6d3cb-b128-4fd1-85a7-0faf7d9e0d1a",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794810496325
+      }
+    ],
+    "5.1 Implement `computeCV`, `isMonotoneStep`, and `assessAmounts` in `src/detect/assessAmounts.ts`": [
+      {
+        "executionId": "24d6d3cb-b128-4fd1-85a7-0faf7d9e0d1a",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794810501115
+      },
+      {
+        "executionId": "24d6d3cb-b128-4fd1-85a7-0faf7d9e0d1a",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794810840596
+      }
+    ],
+    "5. Implement amount assessment": [
+      {
+        "executionId": "24d6d3cb-b128-4fd1-85a7-0faf7d9e0d1a",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794810840687
+      }
     ]
   }
 }
