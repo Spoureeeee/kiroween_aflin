@@ -12,7 +12,7 @@ against the real sample CSV.
 
 ## Tasks
 
-- [ ] 1. Create module types and project skeleton
+- [x] 1. Create module types and project skeleton
   - Create `src/detect/types.ts` with `Cadence`, `Confidence`, and `DetectedSubscription`
     interfaces exactly matching the design document's type signatures.
   - Create stub files for all six implementation modules (`normaliseMerchant.ts`,
