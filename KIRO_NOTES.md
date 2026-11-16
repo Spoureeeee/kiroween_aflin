@@ -24,6 +24,13 @@ Running notes on how Kiro was used on Subscription Graveyard (Kiroween 2026, Cos
 - Revision 3: two-distinct-values exemption for clean price steps, never strip the first token (`7-ELEVEN`), CV defined as population standard deviation.
 - Credits: about 10 of 50 free credits used by the end of requirements.
 
+- Design stage: reviewed `design.md` before approving. Found property tests that would pass vacuously (random inputs almost never form a subscription), a price-step rule that admitted habits like A,B,A, and a "possible" confidence value that was never produced. Revised design and requirements before any code was written.
+- Task stage: ran tasks one at a time instead of "Run all tasks", to control credit spend. Per-task cost was small (about 0.8 to 2.4 credits); the planning documents (requirements and design revisions) cost far more (about 20 credits) than the code.
+- Implementation: normaliser, interval helpers, cadence classification, amount assessment and the 9-step pipeline built from tasks 1 to 7. Independently checked against the sample CSV: exactly the 7 expected subscriptions detected, all noise merchants excluded, output identical when input order is reversed.
+- Fixture test (task 9.1) covers all 16 sample-CSV assertions. It broke `npm run typecheck` (missing Node type definitions); fixed by adding `@types/node`.
+- Property tests 8.1 to 8.4 added (order independence, monthly drift detection, positive typical amounts, all-credit input). Inputs are built from known subscription series plus noise so they cannot pass vacuously.
+- Test count: 100 passing. Credits: about 46 of 50 free credits used.
+
 ## Still to do
-- Design and tasks stages for the detector.
+- Property tests 8.5 to 8.7, unit tests 2.2 to 5.2 (optional tasks, need more credits).
 - Hooks (run tests on save), one MCP integration that does real work, UI built by vibe coding (for the spec vs vibe comparison).
