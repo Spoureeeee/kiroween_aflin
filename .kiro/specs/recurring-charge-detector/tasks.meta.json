@@ -1,5 +1,22 @@
 {
-  "pbtResults": {},
+  "pbtResults": {
+    "8.1 Write Property 1 (order-independence) in `src/detect/__tests__/detector.property.test.ts`": {
+      "status": "passed",
+      "lastRunTimestamp": 1794812160885
+    },
+    "8.2 Write Property 2 (monthly drift detection) in the same file": {
+      "status": "passed",
+      "lastRunTimestamp": 1794818272476
+    },
+    "8.3 Write Property 3 (positive typical amounts) in the same file": {
+      "status": "passed",
+      "lastRunTimestamp": 1794818357671
+    },
+    "8.4 Write Property 4 (all-credit empty output) in the same file": {
+      "status": "passed",
+      "lastRunTimestamp": 1794818480129
+    }
+  },
   "executionHistory": {
     "1. Create module types and project skeleton": [
       {
@@ -137,6 +154,61 @@
         "executionId": "f899c17a-3fed-48b5-931d-bf319ecbbe57",
         "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
         "timestamp": 1794811537051
+      }
+    ],
+    "8.1 Write Property 1 (order-independence) in `src/detect/__tests__/detector.property.test.ts`": [
+      {
+        "executionId": "933e59d4-51bb-4d99-b6e7-51ef9405b276",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794811906952
+      },
+      {
+        "executionId": "933e59d4-51bb-4d99-b6e7-51ef9405b276",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794812174857
+      }
+    ],
+    "8. Write property-based tests": [
+      {
+        "executionId": "933e59d4-51bb-4d99-b6e7-51ef9405b276",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794812174934
+      }
+    ],
+    "8.2 Write Property 2 (monthly drift detection) in the same file": [
+      {
+        "executionId": "933e59d4-51bb-4d99-b6e7-51ef9405b276",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794812180035
+      },
+      {
+        "executionId": "933e59d4-51bb-4d99-b6e7-51ef9405b276",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794818288440
+      }
+    ],
+    "8.3 Write Property 3 (positive typical amounts) in the same file": [
+      {
+        "executionId": "933e59d4-51bb-4d99-b6e7-51ef9405b276",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794818295682
+      },
+      {
+        "executionId": "933e59d4-51bb-4d99-b6e7-51ef9405b276",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794818369626
+      }
+    ],
+    "8.4 Write Property 4 (all-credit empty output) in the same file": [
+      {
+        "executionId": "933e59d4-51bb-4d99-b6e7-51ef9405b276",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794818375040
+      },
+      {
+        "executionId": "933e59d4-51bb-4d99-b6e7-51ef9405b276",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794818494021
       }
     ]
   }

@@ -121,25 +121,25 @@ against the real sample CSV.
     - Export types `DetectedSubscription`, `Cadence`, `Confidence` from `./types.js`.
     - _Requirements: 9.1_
 
-- [ ] 8. Write property-based tests
-  - [ ]* 8.1 Write Property 1 (order-independence) in `src/detect/__tests__/detector.property.test.ts`
+- [x] 8. Write property-based tests
+  - [x]* 8.1 Write Property 1 (order-independence) in `src/detect/__tests__/detector.property.test.ts`
     - **Property 1: Order-independence**
     - Use `fc.array(transactionArbitrary(), { minLength: 2, maxLength: 50 })` and a Fisher-Yates
       shuffle or `fc.shuffledSubarray` on the same array; assert deep equality of outputs.
     - **Validates: Requirements 11.1**
-  - [ ]* 8.2 Write Property 2 (monthly drift detection) in the same file
+  - [x]* 8.2 Write Property 2 (monthly drift detection) in the same file
     - **Property 2: Monthly series with bounded drift is always detected**
     - Generate merchant name via `fc.stringMatching(/^[A-Z]{3,12}$/)` (alphabetic only); build
       ≥3 transactions at intervals drawn from [27, 33] days; assert output contains an entry with
       that merchant and `cadence === "monthly"` and `confidence === "confirmed"`.
     - **Validates: Requirements 11.2, 4.2, 5.1**
-  - [ ]* 8.3 Write Property 3 (positive typical amounts) in the same file
+  - [x]* 8.3 Write Property 3 (positive typical amounts) in the same file
     - **Property 3: All typical amounts are positive**
     - Build a known confirmed monthly series (≥3 charges, alphabetic-only merchant name via
       `fc.stringMatching(/^[A-Z]{4,10}$/)`, fixed amount) plus random noise; assert all
       `typicalAmountMinorUnits` in output are ≥ 1.
     - **Validates: Requirements 11.3, 9.4**
-  - [ ]* 8.4 Write Property 4 (all-credit empty output) in the same file
+  - [x]* 8.4 Write Property 4 (all-credit empty output) in the same file
     - **Property 4: All-credit input yields empty output**
     - Generate transactions with `amountMinorUnits <= 0`; assert output is `[]`.
     - **Validates: Requirements 11.4, 2.1, 2.2**
