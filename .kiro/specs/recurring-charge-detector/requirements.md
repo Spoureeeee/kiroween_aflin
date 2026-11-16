@@ -16,7 +16,7 @@ The recurring-charge detector is a pure-function module (`src/detect/`) for Subs
 - **Confidence**: A label indicating certainty — `"confirmed"` when minimum charge-count thresholds are met, `"possible"` otherwise.
 - **Active_Subscription**: A subscription whose `lastCharge` falls within the cadence-window look-back distance of the latest transaction date in the input.
 - **Minor_Unit**: The smallest currency denomination (e.g. sen for MYR, cent for USD); amounts are always integers in this unit.
-- **Coefficient_of_Variation**: Standard deviation divided by mean for a set of amounts, expressed as a ratio.
+- **Coefficient_of_Variation**: The population standard deviation of a set of `amountMinorUnits` values divided by their mean, computed entirely on integer minor units. Population standard deviation uses N (not N-1) in the denominator.
 - **Reference_Number**: A trailing token in a description that contains at least one digit, identifying a specific transaction instance rather than the merchant (e.g. `"8823"` in `"NIGHTFLIX.COM 8823"`).
 
 ---
@@ -35,7 +35,8 @@ The recurring-charge detector is a pure-function module (`src/detect/`) for Subs
 4. WHEN two transaction descriptions differ only in their trailing Reference_Numbers, THE Detector SHALL assign them the same Merchant_Name.
 5. THE Detector SHALL treat normalisation as a pure function: the same input description always produces the same Merchant_Name.
 6. IF a transaction description is an empty string or contains only whitespace, THEN THE Detector SHALL return an empty string as the Merchant_Name without throwing an error.
-7. IF every token in a transaction description contains at least one digit, THEN THE Detector SHALL keep all tokens that contain no digits (alphabetic words) as the Merchant_Name and drop only the digit-containing tokens; if no alphabetic tokens exist, it SHALL return the full uppercased description unchanged.
+7. THE Detector SHALL never strip the first whitespace-delimited token of a description when stripping trailing Reference_Numbers, so that a merchant name beginning with a digit or hyphenated token (e.g. `"7-ELEVEN"`) is always preserved.
+8. WHEN two transaction descriptions are `"7-ELEVEN 1234"` and `"7-ELEVEN 5678"`, THE Detector SHALL normalise both to the Merchant_Name `"7-ELEVEN"`.
 
 ---
 
@@ -113,9 +114,11 @@ The recurring-charge detector is a pure-function module (`src/detect/`) for Subs
 #### Acceptance Criteria
 
 1. IF the Coefficient_of_Variation of `amountMinorUnits` within a series is greater than 0 and less than or equal to 0.10, THEN THE Detector SHALL still recognise the series as recurring.
-2. THE Detector SHALL record the `typicalAmountMinorUnits` as the median `amountMinorUnits` across occurrences in the series; when the occurrence count is even, the value is the lower of the two middle values, expressed as a positive integer in minor units. THE Detector SHALL also record `latestAmountMinorUnits` as the `amountMinorUnits` of the most recent occurrence (after duplicate suppression and chronological sorting), expressed as a positive integer in minor units.
-3. IF `latestAmountMinorUnits` differs from `typicalAmountMinorUnits`, THEN THE Detector SHALL set `amountChanged` to `true`.
-4. IF `latestAmountMinorUnits` equals `typicalAmountMinorUnits`, THEN THE Detector SHALL set `amountChanged` to `false`.
+2. IF a series has more than 2 distinct `amountMinorUnits` values AND its Coefficient_of_Variation exceeds 0.10, THEN the CV-based exclusion in Requirement 8 applies. IF a series has at most 2 distinct `amountMinorUnits` values, THE Detector SHALL recognise it as recurring regardless of its Coefficient_of_Variation (a clean price step does not disqualify a series).
+3. EXAMPLE: A series with amounts [1790, 1790, 1790, 2490, 2490] at approximately 30-day intervals has 2 distinct values and SHALL be detected as a monthly subscription with `typicalAmountMinorUnits` equal to 1790, `latestAmountMinorUnits` equal to 2490, and `amountChanged` equal to `true`.
+4. THE Detector SHALL record the `typicalAmountMinorUnits` as the median `amountMinorUnits` across occurrences in the series; when the occurrence count is even, the value is the lower of the two middle values, expressed as a positive integer in minor units. THE Detector SHALL also record `latestAmountMinorUnits` as the `amountMinorUnits` of the most recent occurrence (after duplicate suppression and chronological sorting), expressed as a positive integer in minor units.
+5. IF `latestAmountMinorUnits` differs from `typicalAmountMinorUnits`, THEN THE Detector SHALL set `amountChanged` to `true`.
+6. IF `latestAmountMinorUnits` equals `typicalAmountMinorUnits`, THEN THE Detector SHALL set `amountChanged` to `false`.
 
 ---
 
@@ -125,7 +128,7 @@ The recurring-charge detector is a pure-function module (`src/detect/`) for Subs
 
 #### Acceptance Criteria
 
-1. IF a series has a Coefficient_of_Variation of `amountMinorUnits` greater than 0.10, THEN THE Detector SHALL exclude the series from the output regardless of its Median_Interval.
+1. IF a series has a Coefficient_of_Variation of `amountMinorUnits` greater than 0.10 AND the series has more than 2 distinct `amountMinorUnits` values, THEN THE Detector SHALL exclude the series from the output regardless of its Median_Interval.
 
 ---
 
