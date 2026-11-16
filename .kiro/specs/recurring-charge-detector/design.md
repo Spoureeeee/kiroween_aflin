@@ -170,7 +170,12 @@ export interface AmountAssessment {
   /**
    * true when the series passes the amount-variability gate:
    *   - CV <= 0.10, OR
-   *   - clean price-step exemption (<=2 distinct amounts, >=3 occurrences, >=2 share one amount).
+   *   - clean price-step exemption:
+   *       * at most 2 distinct amounts,
+   *       * at least 3 occurrences,
+   *       * at least 2 occurrences share one amount value, AND
+   *       * the chronological amount sequence changes value at most once
+   *         (A,A,A,B,B qualifies; A,B,A does not).
    */
   passes: boolean;
 }
@@ -182,6 +187,20 @@ export interface AmountAssessment {
  * Returns 0 when all amounts are equal.
  */
 export function computeCV(amounts: readonly number[]): number;
+
+/**
+ * Returns true when the chronological amount sequence changes value at most
+ * once — i.e. the sequence is of the form A*B* (zero or more of value A
+ * followed by zero or more of value B, where A and B may be equal).
+ * Used to validate the clean price-step exemption.
+ *
+ * Examples:
+ *   isMonotoneStep([1790, 1790, 2490])  // true  — A,A,B
+ *   isMonotoneStep([1790, 2490, 2490])  // true  — A,B,B
+ *   isMonotoneStep([1790, 2490, 1790])  // false — A,B,A (two transitions)
+ *   isMonotoneStep([500])               // true  — single value
+ */
+export function isMonotoneStep(amounts: readonly number[]): boolean;
 
 /**
  * Assesses amount variability for one merchant series.
@@ -290,10 +309,14 @@ isActive = daysBetween(lastCharge, latestInputDate) <= ACTIVE_LOOKBACK[cadence]
 
 ### Confidence assignment
 
-Under the current requirements all series that survive the full pipeline are
-assigned `"confirmed"`. The `"possible"` label is reserved for future use (e.g.
-a series below minimum count that the user forces through a manual override).
-No series currently exits the pipeline with `"possible"`.
+A series's confidence is determined solely by its occurrence count after duplicate suppression:
+
+- **Exactly 2 occurrences** → `"possible"`. Two data points establish a pattern but are not enough to confirm it.
+- **3 or more occurrences** → `"confirmed"`. Sufficient evidence.
+
+The minimum-count gate (weekly ≥3, monthly ≥2, quarterly ≥2, annual ≥2) still applies before confidence is assigned; a series below its minimum count is excluded entirely and never reaches confidence assignment.
+
+Consequence: any two-charge monthly or quarterly series that survives all other filters (cadence window, CV/price-step gate) will appear in the output with `confidence === "possible"`. The READLY NEWS DIGITAL fixture (2 quarterly charges in the sample CSV) is an example.
 
 ---
 
@@ -389,7 +412,7 @@ the length of the returned array to decide whether to show the empty-state scree
 - `computeGaps`: fewer than 2 dates, chronological order
 - `median`: single element, odd count, even count (lower-of-two rule)
 - `classifyCadence`: boundary values at each window edge, values outside all windows
-- `assessAmounts`: CV=0 series, CV just above/below 0.10, clean price-step exemption, non-exempt two-occurrence series
+- `assessAmounts` / `isMonotoneStep`: CV=0 series; CV just above/below 0.10; clean price-step exemption with [1790, 1790, 2490] (passes); rejection of [1790, 2490, 1790] because the sequence changes value twice (A,B,A); rejection of [1790, 2490] with CV > 0.10 because it has only 2 occurrences; two-occurrence series with CV ≤ 0.10 (passes via CV path)
 - `detectSubscriptions`: the sample-CSV fixture (Req 12)
 
 **Property-based tests** (fast-check, minimum 100 iterations each) verify the 7 correctness
@@ -398,21 +421,18 @@ properties from Req 11. The library is already a dev dependency (`fast-check ^3.
 ### fast-check generator strategies
 
 **Property 1 — Order-independence**
-- Generator: `fc.array(transactionArbitrary(), { minLength: 2, maxLength: 50 })`
-  then `fc.shuffledSubarray` or `fc.permutation` on the generated list.
+- Generator: `fc.array(transactionArbitrary(), { minLength: 2, maxLength: 50 })` then shuffle with `fc.shuffledSubarray` or a Fisher-Yates permutation applied to the same array.
 - Assert: `detectSubscriptions(shuffled)` deeply equals `detectSubscriptions(original)`.
 - Tag: `Feature: recurring-charge-detector, Property 1: order-independence`
 
 **Property 2 — Monthly drift detection**
-- Generator: `fc.record({ merchantName: fc.string({ minLength: 1 }), count: fc.integer({ min: 2, max: 8 }) })`
-  then build transactions with dates spaced 30 ± `fc.integer({ min: 0, max: 3 })` days apart,
-  amounts `fc.integer({ min: 100, max: 100_000 })` (all equal to keep CV=0).
-- Assert: output contains an entry with the expected `merchantName` and `cadence === "monthly"`.
+- Generator: `fc.record({ merchantName: fc.stringMatching(/^[A-Z]{3,12}$/), count: fc.integer({ min: 3, max: 8 }), amount: fc.integer({ min: 100, max: 100_000 }) })` — merchantName is restricted to uppercase ASCII letters only to avoid collisions with digit-stripping. Build transactions with dates spaced `30 + fc.integer({ min: -3, max: 3 })` days apart from a fixed start date, all at the same `amount` to keep CV=0.
+- Assert: output contains an entry with the generated `merchantName` and `cadence === "monthly"` and `confidence === "confirmed"`.
 - Tag: `Feature: recurring-charge-detector, Property 2: monthly drift detection`
 
 **Property 3 — Positive typical amounts**
-- Generator: `fc.array(transactionArbitrary(), { minLength: 1, maxLength: 100 })`.
-- Assert: every element of the output satisfies `typicalAmountMinorUnits >= 1`.
+- Generator: build a known confirmed monthly subscription series (≥3 charges at a fixed amount, 30-day spacing, alphabetic-only merchant name generated by `fc.stringMatching(/^[A-Z]{4,10}$/)`) and append `fc.array(transactionArbitrary(), { minLength: 0, maxLength: 30 })` as random noise. The base subscription guarantees a non-empty output.
+- Assert: first confirm the output is non-empty and contains the known subscription. Then assert every element of the output satisfies `typicalAmountMinorUnits >= 1`.
 - Tag: `Feature: recurring-charge-detector, Property 3: positive typical amounts`
 
 **Property 4 — All-credit empty output**
@@ -420,23 +440,19 @@ properties from Req 11. The library is already a dev dependency (`fast-check ^3.
 - Assert: `detectSubscriptions(input).length === 0`.
 - Tag: `Feature: recurring-charge-detector, Property 4: all-credit empty output`
 
-**Property 5 — firstCharge <= lastCharge**
-- Generator: `fc.array(transactionArbitrary(), { minLength: 1, maxLength: 100 })`.
-- Assert: for every result, `result.firstCharge <= result.lastCharge` (lexicographic).
+**Property 5 — firstCharge ≤ lastCharge**
+- Generator: build a known confirmed monthly subscription series (≥3 charges at a fixed amount, 30-day spacing, alphabetic-only merchant name generated by `fc.stringMatching(/^[A-Z]{4,10}$/)`), appended with `fc.array(transactionArbitrary(), { minLength: 0, maxLength: 20 })` as random noise. The base subscription guarantees at least one result to assert against.
+- Assert: first confirm the output contains the known subscription. Then assert that for every result entry, `result.firstCharge <= result.lastCharge` (lexicographic ISO string comparison).
 - Tag: `Feature: recurring-charge-detector, Property 5: firstCharge <= lastCharge`
 
 **Property 6 — Numeric suffixes do not affect grouping**
-- Generator: a fixed merchant base name `fc.string({ minLength: 1, maxLength: 20 })` (all alpha)
-  combined with two distinct numeric suffixes `fc.nat()`. Build a monthly series using
-  `"<base> <suffix1>"` and `"<base> <suffix2>"` alternating.
-- Assert: output contains exactly one entry and its `merchantName` equals `normaliseMerchant(base)`.
+- Generator: `fc.record({ base: fc.stringMatching(/^[A-Z]{3,12}$/), suffix1: fc.nat({ max: 9999 }), suffix2: fc.nat({ max: 9999 }).filter(n => n !== suffix1), count: fc.integer({ min: 3, max: 6 }), amount: fc.integer({ min: 100, max: 100_000 }) })`. Build a monthly series alternating between `"<base> <suffix1>"` and `"<base> <suffix2>"` descriptions, all at the same amount, 30-day spacing. Use an alphabetic-only base so the base itself is never stripped.
+- Assert: output contains exactly one entry for this merchant and its `merchantName` equals `base` (the uppercased base with no suffix).
 - Tag: `Feature: recurring-charge-detector, Property 6: numeric suffix grouping`
 
 **Property 7 — Unrelated merchants do not disturb results**
-- Generator: a base transaction list that is known to produce at least one subscription S, plus
-  `fc.array(unrelatedTransactionArbitrary(existingNames), { minLength: 1, maxLength: 20 })`.
-- Assert: S's core fields in `detectSubscriptions(base ++ extra)` match those in
-  `detectSubscriptions(base)`.
+- Generator: build a known confirmed monthly subscription series S (≥3 charges, fixed alphabetic merchant name `fc.stringMatching(/^[A-Z]{4,10}$/)`, fixed amount, 30-day spacing). Then generate `fc.array` of transactions under a fresh merchant name (also alphabetic, guaranteed distinct from S's name) as noise, with arbitrary amounts and dates.
+- Assert: first confirm that `detectSubscriptions(base)` contains S with its expected fields (`merchantName`, `cadence`, `typicalAmountMinorUnits`, `latestAmountMinorUnits`, `confidence`, `firstCharge`, `lastCharge`, `chargeCount`). Then assert that `detectSubscriptions(base ++ noise)` contains an entry for S with identical values for all those fields.
 - Tag: `Feature: recurring-charge-detector, Property 7: unrelated merchant isolation`
 
 ### Test file locations
