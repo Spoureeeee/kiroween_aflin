@@ -31,6 +31,25 @@
         "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
         "timestamp": 1794810048497
       }
+    ],
+    "3.1 Implement `daysBetween`, `computeGaps`, and `median` in `src/detect/computeIntervals.ts`": [
+      {
+        "executionId": "065605e7-68e3-44ec-a721-039be0d7b393",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794810231358
+      },
+      {
+        "executionId": "065605e7-68e3-44ec-a721-039be0d7b393",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794810317281
+      }
+    ],
+    "3. Implement interval and median helpers": [
+      {
+        "executionId": "065605e7-68e3-44ec-a721-039be0d7b393",
+        "chatSessionId": "sess_b10f7e3a-0388-4f37-aa5b-90ceb5e62b70",
+        "timestamp": 1794810317358
+      }
     ]
   }
 }

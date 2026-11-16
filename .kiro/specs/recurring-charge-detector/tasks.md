@@ -41,8 +41,8 @@ against the real sample CSV.
     - Test internal whitespace collapse.
     - _Requirements: 1.1, 1.2, 1.3, 1.6, 1.7, 1.8_
 
-- [ ] 3. Implement interval and median helpers
-  - [ ] 3.1 Implement `daysBetween`, `computeGaps`, and `median` in `src/detect/computeIntervals.ts`
+- [x] 3. Implement interval and median helpers
+  - [x] 3.1 Implement `daysBetween`, `computeGaps`, and `median` in `src/detect/computeIntervals.ts`
     - `daysBetween(earlier, later)`: compute whole calendar days between two ISO date strings using
       `Date.UTC` subtraction with no timezone conversion; always non-negative.
     - `computeGaps(dates)`: given a sorted array of ISO date strings, return the array of
